@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather App</title>
+        <link rel="shortcut icon" href="image.png" type="image/x-icon">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            width: 350px;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .weather-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .weather-info img {
+            width: 100px;
+            height: 100px;
+        }
+        .weather-detail {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 0 10px;
+        }
+        .weather-detail img {
+            width: 25px;
+            height: 25px;
+        }
+        .weather-detail p {
+            margin: 0;
+        }
+        .weather-info h2 {
+            font-size: 1.8em;
+        }
+        .weather-info p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="locationInput" placeholder="Enter location">
+        <button onclick="fetchWeather()">🔍</button>
+        <div class="weather-info" id="weatherInfo"></div>
+    </div>
+
+    <script>
+        const apiKey = 'f27b269d54e4fa1e72993364a80fa8bd'; 
+
+        function fetchWeather() {
+            const location = document.getElementById('locationInput').value;
+            if (!location) {
+                alert('Please enter a location.');
+                return;
+            }
+
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Location not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayWeather(data);
+                })
+                .catch(error => {
+                    document.getElementById('weatherInfo').innerHTML = `<p style="color: red;">${error.message}</p>`;
+                });
+        }
+
+        function displayWeather(data) {
+            const weatherContainer = document.getElementById('weatherInfo');
+            const { name, main, weather, wind } = data;
+
+            weatherContainer.innerHTML = `
+                <h2>${name}</h2>
+                <img src="https://openweathermap.org/img/wn/${weather[0].icon}@4x.png" alt="${weather[0].description}">
+                <p style="font-size: 2.5em; font-weight: bold;">${main.temp}&#8451;</p>
+                <div class="weather-detail">
+                    <img src="https://img.icons8.com/ios/50/ffffff/cloud.png" alt="Condition">
+                    <p>${weather[0].description}</p>
+                </div>
+                <div class="weather-detail">
+                    <img src="https://img.icons8.com/ios/50/ffffff/humidity.png" alt="Humidity">
+                    <p>${main.humidity}%</p>
+                </div>
+                <div class="weather-detail">
+                    <img src="https://img.icons8.com/ios/50/ffffff/wind.png" alt="Wind Speed">
+                    <p>${wind.speed} km/h</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
